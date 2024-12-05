@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogo</title>
+    <link rel="stylesheet" href="{% static 'css/catalogue.css' %}">
+</head>
+
+<body>
+    <div class="bg-texture"></div>
+
+    <header>
+        <div class="main-title-container">
+            <a href="" class="menu-btn" id="menu-toggle"><img src="{% static 'imgs/menu-icon.svg' %}" alt="" height="50"></a>
+            <h1>Gerenciamento de Livros</h1>
+
+            <div class="auth-container">
+                {% if user.is_authenticated %}
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Cadastro</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <nav id="hidden-menu" class="hidden-menu">
+        <ul>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'profile' %}"><img src="{% static 'imgs/account-icon.svg' %}" alt="">{{ user.email }}</a></li>
+            {% endif %}
+            <li><a href="{% url 'home' %}"><img src="{% static 'imgs/home-icon.svg' %}" alt="">Inicio</a></li>
+            <li><a href="#"><img src="{% static 'imgs/about-icon.svg' %}" alt="">Sobre</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="search-container">
+            <h2 class="sub-title">Pesquisa de Livros</h2>
+            <form method="get" action="{% url 'create' %}" class="search-bar">
+                <div class="input-container">
+                    <input type="text" name="query" id="search-input" placeholder="Digite para pesquisar..." value="{{ request.GET.query|default_if_none:'' }}">
+                    <button type="button" id="clear-button">✖</button>
+                    <button type="submit" id="search-button">Buscar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="row">
+            {% if books %}
+                {% for book in books %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <a href="javascript:void(0);" class="img-link" onclick="checkReview('{{ book.api_id }}', {{ user.is_authenticated|yesno:'true,false' }})">
+                                {% if book.cover %}
+                                    <img src="{{ book.cover }}" class="card-img-top" alt="{{ book.title }}">
+                                {% else %}
+                                    <div class="placeholder-image">Sem Capa</div>
+                                {% endif %}
+                            </a>
+                            <div class="card-body">
+                                <a href="javascript:void(0);" class="img-link" onclick="checkReview('{{ book.api_id }}', {{ user.is_authenticated|yesno:'true,false' }})">
+                                    <h5 class="card-title">{{ book.title }}</h5>
+                                </a>
+                                <p class="card-text"><strong>Autor:</strong> {{ book.author }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-muted">Nenhum livro encontrado.</p>
+            {% endif %}
+        </div>
+
+        <!-- Paginação -->
+        <div class="pagination-container">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}"><img src="{% static 'imgs/arrow-back.svg'%}" alt=""></a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}&query={{ request.GET.query }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}"><img src="{% static 'imgs/arrow-foward.svg' %}" alt=""></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </main>
+
+    <footer>
+        <span>made with <img src="" alt=""></span>
+        <img src="{% static 'imgs/django-logo-black-and-white.png' %}" alt="">
+    </footer>
+
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h5 class="modal-title">Aviso</h5>
+            <p>Esse livro já tem uma avaliação.</p>
+            <div class="modal-footer">
+                <button class="close-btn" onclick="closeModal()">Fechar</button>
+                <a id="edit-review-btn" href="#" class="edit-btn">Editar Avaliação</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/menuToggle.js' %}"></script>
+    <script src="{% static 'js/search.js' %}"></script>
+    <script src="{% static 'js/modal.js' %}"></script>
+</body>
+</html>

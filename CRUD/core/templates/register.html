@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta</title>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+
+<main>
+    <div class="img-container">
+        <img src="{% static 'imgs/blackbeard-writing-wide-min.jpg' %}" alt="">
+    </div>
+    <div class="form-container">
+        
+        <form method="POST" enctype="multipart/form-data">
+            <h2>Criar Conta</h2>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn form-btn">Registrar</button>
+            <span class="login-text">Já tem uma conta? <a href="{% url 'login' %}">Login</a> </span>
+        </form>
+    </div>
+</main>
+
+
+<div id="errorModal" class="modal" data-has-errors="{% if form.errors %}true{% else %}false{% endif %}">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h5 class="modal-title">Erros de Autenticação</h5>
+        <div class="modal-body">
+            {% if form.errors %}
+                {% for field in form %}
+                    {% if field.errors %}
+                        <p><strong>{{ field.label }}:</strong> {{ field.errors }}</p>
+                    {% endif %}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                    <p>{{ form.non_field_errors }}</p>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/registerModal.js' %}"></script>
+
+</body>
+</html>

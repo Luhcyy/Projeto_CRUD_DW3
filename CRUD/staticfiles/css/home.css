@@ -1,0 +1,14 @@
+body {
+    display: flexbox;
+    padding: 0;
+    margin: 0;
+}
+
+
+.main-title-container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    border: 1px solid;
+}
