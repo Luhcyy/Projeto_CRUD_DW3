@@ -21,12 +21,13 @@ def process_book(book_data):
     book_obj = Book.objects.filter(api_id=api_id).first()
     
     if not book_obj:
-        title = book_data['volumeInfo'].get('title')
-        author = ', '.join(book_data['volumeInfo'].get('authors', ['Desconhecido']))
-        cover_url = book_data['VolumeInfo'].get('imageLinks', {}).get('thumbnail', None)
-        synopsis = book_data['volumeInfo'].get('description', 'Sinopse não disponível.')
-
+        volume_info = book_data.get('volumeInfo', {})
+        title = volume_info.get('title', 'Título não disponível')
+        author = ', '.join(volume_info.get('authors', ['Desconhecido']))
+        cover_url = volume_info.get('imageLinks', {}).get('thumbnail', None)
+        synopsis = volume_info.get('description', 'Sinopse não disponível.')
         slug = slugify(title)
+        
         while Book.objects.filter(slug=slug).exists():
             slug = f"{slug}-{api_id}"
 
