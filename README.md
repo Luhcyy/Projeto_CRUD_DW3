@@ -82,7 +82,9 @@ Professor Aplicante: Orlando Saraiva Jr.
 ### Requisitos
 <ul>
   <li>Python 3.x instalado</li>
-  <li>Todas as dependencias do arquivo "requirements.txt" instaladas</li>
+  <li>Django 5.1.3</li>
+  <li>requests 2.32.3</li>
+  <li>instalação do arquivo "requirements.txt"</li>
 </ul>
 
 ### Como usar?
